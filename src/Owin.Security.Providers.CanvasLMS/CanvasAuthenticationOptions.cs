@@ -2,19 +2,23 @@
 using System.Collections.Generic;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
-using Owin.Security.Providers.Fitbit.Provider;
+using Owin.Security.Providers.CanvasLMS.Provider;
 
-namespace Owin.Security.Providers.Fitbit
+namespace Owin.Security.Providers.CanvasLMS
 {
-    public class FitbitAuthenticationOptions : AuthenticationOptions
+    public class CanvasAuthenticationOptions : AuthenticationOptions
     {
-        public class FitbitAuthenticationEndpoints
+        /// <summary>
+        /// Endpoints for Canvas LMS authentication, as described at
+        /// https://canvas.instructure.com/doc/api/file.oauth_endpoints.html
+        /// </summary>
+        public class CanvasAuthenticationEndpoints
         {
             /// <summary>
-            /// Endpoint which is used to redirect users to request Fitbit access
+            /// Endpoint which is used to redirect users to request Canvas access
             /// </summary>
             /// <remarks>
-            /// Defaults to https://www.fitbit.com/oauth2/authorize
+            /// Defaults to https://canvas.instructure.com/login/oauth2/auth
             /// </remarks>
             public string AuthorizationEndpoint { get; set; }
 
@@ -22,19 +26,25 @@ namespace Owin.Security.Providers.Fitbit
             /// Endpoint which is used to exchange code for access token
             /// </summary>
             /// <remarks>
-            /// Defaults to https://api.fitbit.com/oauth2/token
+            /// Defaults to https://canvas.instructure.com/login/oauth2/token
             /// </remarks>
             public string TokenEndpoint { get; set; }
 
+            /// <summary>
+            /// Endpoint which is used to request details about the authenticated user
+            /// </summary>
+            /// <remarks>
+            /// Defaults to https://canvas.instructure.com/api/v1/users/self
+            /// </remarks>
             public string UserEndpoint { get; set; }
         }
 
-        private const string AuthorizationEndPoint = "https://www.fitbit.com/oauth2/authorize";
-        private const string TokenEndpoint = "https://api.fitbit.com/oauth2/token";
-        private const string UserEndpoint = "https://api.fitbit.com/1/user/-/profile.json";
+        private const string AuthorizationEndPoint = "https://canvas.instructure.com/login/oauth2/auth";
+        private const string TokenEndpoint = "https://canvas.instructure.com/login/oauth2/token";
+        private const string UserEndpoint = "https://canvas.instructure.com/api/v1/users/self";
 
         /// <summary>
-        ///     Gets or sets timeout value in milliseconds for back channel communications with Fitbit.
+        ///     Gets or sets timeout value in milliseconds for back channel communications with Canvas.
         /// </summary>
         /// <value>
         ///     The back channel timeout in milliseconds.
@@ -44,7 +54,7 @@ namespace Owin.Security.Providers.Fitbit
         /// <summary>
         ///     The request path within the application's base path where the user-agent will be returned.
         ///     The middleware will process this request when it arrives.
-        ///     Default value is "/signin-Fitbit".
+        ///     Default value is "/signin-canvas".
         /// </summary>
         public PathString CallbackPath { get; set; }
 
@@ -58,25 +68,24 @@ namespace Owin.Security.Providers.Fitbit
         }
 
         /// <summary>
-        ///     Gets or sets the Fitbit supplied Client ID
+        ///     Gets or sets the Canvas supplied Client ID
         /// </summary>
         public string ClientId { get; set; }
 
         /// <summary>
-        ///     Gets or sets the Fitbit supplied Client Secret
+        ///     Gets or sets the Canvas supplied Client Secret
         /// </summary>
         public string ClientSecret { get; set; }
 
         /// <summary>
-        /// Gets the sets of OAuth endpoints used to authenticate against Fitbit.  Overriding these endpoints allows you to use Fitbit Enterprise for
-        /// authentication.
+        /// Gets the sets of OAuth endpoints used to authenticate against Canvas.
         /// </summary>
-        public FitbitAuthenticationEndpoints Endpoints { get; set; }
+        public CanvasAuthenticationEndpoints Endpoints { get; set; }
 
         /// <summary>
-        ///     Gets or sets the <see cref="IFitbitAuthenticationProvider" /> used in the authentication events
+        ///     Gets or sets the <see cref="ICanvasAuthenticationProvider" /> used in the authentication events
         /// </summary>
-        public IFitbitAuthenticationProvider Provider { get; set; }
+        public ICanvasAuthenticationProvider Provider { get; set; }
         
         /// <summary>
         /// A list of permissions to request.
@@ -90,7 +99,7 @@ namespace Owin.Security.Providers.Fitbit
         public string SignInAsAuthenticationType { get; set; }
 
         /// <summary>
-        /// Gets or sets the mode of the fitbit authentication page.  Can be none, login, or consent.  Defaults to none.
+        /// Gets or sets the mode of the Canvas authentication page.  Can be none, login, or consent.  Defaults to none.
         /// </summary>
         public string Prompt { get; set; }
 
@@ -100,20 +109,20 @@ namespace Owin.Security.Providers.Fitbit
         public ISecureDataFormat<AuthenticationProperties> StateDataFormat { get; set; }
 
         /// <summary>
-        ///     Initializes a new <see cref="FitbitAuthenticationOptions" />
+        ///     Initializes a new <see cref="CanvasAuthenticationOptions" />
         /// </summary>
-        public FitbitAuthenticationOptions()
-            : base("Fitbit")
+        public CanvasAuthenticationOptions()
+            : base(Constants.DefaultAuthenticationType)
         {
             Caption = Constants.DefaultAuthenticationType;
-            CallbackPath = new PathString("/signin-fitbit");
+            CallbackPath = new PathString("/signin-canvas");
             AuthenticationMode = AuthenticationMode.Passive;
             Scope = new List<string>
             {
                 "activity", "nutrition", "profile", "settings", "sleep", "social", "weight"
             };
             BackchannelTimeout = TimeSpan.FromSeconds(60);
-            Endpoints = new FitbitAuthenticationEndpoints
+            Endpoints = new CanvasAuthenticationEndpoints
             {
                 AuthorizationEndpoint = AuthorizationEndPoint,
                 TokenEndpoint = TokenEndpoint,

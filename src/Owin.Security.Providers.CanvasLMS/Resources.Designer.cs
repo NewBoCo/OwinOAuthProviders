@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Owin.Security.Providers.Fitbit {
+namespace Owin.Security.Providers.CanvasLMS {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Owin.Security.Providers.Fitbit {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    var temp = new global::System.Resources.ResourceManager("Owin.Security.Providers.Fitbit.Resources", typeof(Resources).Assembly);
+                    var temp = new global::System.Resources.ResourceManager("Owin.Security.Providers.CanvasLMS.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

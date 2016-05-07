@@ -12,18 +12,18 @@ using Microsoft.Owin.Security.DataHandler.Encoder;
 using Microsoft.Owin.Security.Infrastructure;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Owin.Security.Providers.Fitbit.Provider;
+using Owin.Security.Providers.CanvasLMS.Provider;
 
-namespace Owin.Security.Providers.Fitbit
+namespace Owin.Security.Providers.CanvasLMS
 {
-    public class FitbitAuthenticationHandler : AuthenticationHandler<FitbitAuthenticationOptions>
+    public class CanvasAuthenticationHandler : AuthenticationHandler<CanvasAuthenticationOptions>
     {
         private const string XmlSchemaString = "http://www.w3.org/2001/XMLSchema#string";
 
         private readonly ILogger _logger;
         private readonly HttpClient _httpClient;
 
-        public FitbitAuthenticationHandler(HttpClient httpClient, ILogger logger)
+        public CanvasAuthenticationHandler(HttpClient httpClient, ILogger logger)
         {
             _httpClient = httpClient;
             _logger = logger;
@@ -97,7 +97,7 @@ namespace Owin.Security.Providers.Fitbit
                 text = await userInfoResponse.Content.ReadAsStringAsync();
                 var user = JObject.Parse(text);
 
-                var context = new FitbitAuthenticatedContext(Context, user, accessToken, refreshToken)
+                var context = new CanvasAuthenticatedContext(Context, user, accessToken, refreshToken)
                 {
                     Identity = new ClaimsIdentity(
                         Options.AuthenticationType,
@@ -196,7 +196,7 @@ namespace Owin.Security.Providers.Fitbit
                 return true;
             }
 
-            var context = new FitbitReturnEndpointContext(Context, ticket)
+            var context = new CanvasReturnEndpointContext(Context, ticket)
             {
                 SignInAsAuthenticationType = Options.SignInAsAuthenticationType,
                 RedirectUri = ticket.Properties.RedirectUri

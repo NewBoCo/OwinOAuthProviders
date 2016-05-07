@@ -7,17 +7,17 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.DataHandler;
 using Microsoft.Owin.Security.DataProtection;
 using Microsoft.Owin.Security.Infrastructure;
-using Owin.Security.Providers.Fitbit.Provider;
+using Owin.Security.Providers.CanvasLMS.Provider;
 
-namespace Owin.Security.Providers.Fitbit
+namespace Owin.Security.Providers.CanvasLMS
 {
-    public class FitbitAuthenticationMiddleware : AuthenticationMiddleware<FitbitAuthenticationOptions>
+    public class CanvasAuthenticationMiddleware : AuthenticationMiddleware<CanvasAuthenticationOptions>
     {
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
 
-        public FitbitAuthenticationMiddleware(OwinMiddleware next, IAppBuilder app,
-            FitbitAuthenticationOptions options)
+        public CanvasAuthenticationMiddleware(OwinMiddleware next, IAppBuilder app,
+            CanvasAuthenticationOptions options)
             : base(next, options)
         {
             if (string.IsNullOrWhiteSpace(Options.ClientId))
@@ -27,15 +27,15 @@ namespace Owin.Security.Providers.Fitbit
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
                     Resources.Exception_OptionMustBeProvided, "ClientSecret"));
 
-            _logger = app.CreateLogger<FitbitAuthenticationMiddleware>();
+            _logger = app.CreateLogger<CanvasAuthenticationMiddleware>();
 
             if (Options.Provider == null)
-                Options.Provider = new FitbitAuthenticationProvider();
+                Options.Provider = new CanvasAuthenticationProvider();
 
             if (Options.StateDataFormat == null)
             {
                 var dataProtector = app.CreateDataProtector(
-                    typeof (FitbitAuthenticationMiddleware).FullName,
+                    typeof (CanvasAuthenticationMiddleware).FullName,
                     Options.AuthenticationType, "v1");
                 Options.StateDataFormat = new PropertiesDataFormat(dataProtector);
             }
@@ -48,7 +48,7 @@ namespace Owin.Security.Providers.Fitbit
                 Timeout = Options.BackchannelTimeout,
                 MaxResponseContentBufferSize = 1024*1024*10,
             };
-            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Microsoft Owin Fitbit middleware");
+            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Owin Canvas middleware");
             _httpClient.DefaultRequestHeaders.ExpectContinue = false;
         }
 
@@ -58,11 +58,11 @@ namespace Owin.Security.Providers.Fitbit
         /// </summary>
         /// <returns>
         ///     An <see cref="T:Microsoft.Owin.Security.Infrastructure.AuthenticationHandler" /> configured with the
-        ///     <see cref="T:Owin.Security.Providers.Fitbit.FitbitAuthenticationOptions" /> supplied to the constructor.
+        ///     <see cref="T:Owin.Security.Providers.CanvasLMS.CanvasAuthenticationOptions" /> supplied to the constructor.
         /// </returns>
-        protected override AuthenticationHandler<FitbitAuthenticationOptions> CreateHandler()
+        protected override AuthenticationHandler<CanvasAuthenticationOptions> CreateHandler()
         {
-            return new FitbitAuthenticationHandler(_httpClient, _logger);
+            return new CanvasAuthenticationHandler(_httpClient, _logger);
         }
     }
 }

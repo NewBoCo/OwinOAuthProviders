@@ -1,7 +1,7 @@
-﻿namespace Owin.Security.Providers.Fitbit
+﻿namespace Owin.Security.Providers.CanvasLMS
 {
     internal static class Constants
     {
-        public const string DefaultAuthenticationType = "Fitbit";
+        public const string DefaultAuthenticationType = "CanvasLMS";
     }
 }

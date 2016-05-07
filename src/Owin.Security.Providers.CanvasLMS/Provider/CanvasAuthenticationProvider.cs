@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Owin.Security.Providers.Fitbit.Provider
+namespace Owin.Security.Providers.CanvasLMS.Provider
 {
     /// <summary>
-    /// Default <see cref="IFitbitAuthenticationProvider"/> implementation.
+    /// Default <see cref="ICanvasAuthenticationProvider"/> implementation.
     /// </summary>
-    public class FitbitAuthenticationProvider : IFitbitAuthenticationProvider
+    public class CanvasAuthenticationProvider : ICanvasAuthenticationProvider
     {
         /// <summary>
-        /// Initializes a <see cref="FitbitAuthenticationProvider"/>
+        /// Initializes a <see cref="CanvasAuthenticationProvider"/>
         /// </summary>
-        public FitbitAuthenticationProvider()
+        public CanvasAuthenticationProvider()
         {
             OnAuthenticated = context => Task.FromResult<object>(null);
             OnReturnEndpoint = context => Task.FromResult<object>(null);
@@ -20,19 +20,19 @@ namespace Owin.Security.Providers.Fitbit.Provider
         /// <summary>
         /// Gets or sets the function that is invoked when the Authenticated method is invoked.
         /// </summary>
-        public Func<FitbitAuthenticatedContext, Task> OnAuthenticated { get; set; }
+        public Func<CanvasAuthenticatedContext, Task> OnAuthenticated { get; set; }
 
         /// <summary>
         /// Gets or sets the function that is invoked when the ReturnEndpoint method is invoked.
         /// </summary>
-        public Func<FitbitReturnEndpointContext, Task> OnReturnEndpoint { get; set; }
+        public Func<CanvasReturnEndpointContext, Task> OnReturnEndpoint { get; set; }
 
         /// <summary>
-        /// Invoked whenever Fitbit successfully authenticates a user
+        /// Invoked whenever Canvas successfully authenticates a user
         /// </summary>
         /// <param name="context">Contains information about the login session as well as the user <see cref="System.Security.Claims.ClaimsIdentity"/>.</param>
         /// <returns>A <see cref="Task"/> representing the completed operation.</returns>
-        public virtual Task Authenticated(FitbitAuthenticatedContext context)
+        public virtual Task Authenticated(CanvasAuthenticatedContext context)
         {
             return OnAuthenticated(context);
         }
@@ -42,7 +42,7 @@ namespace Owin.Security.Providers.Fitbit.Provider
         /// </summary>
         /// <param name="context"></param>
         /// <returns>A <see cref="Task"/> representing the completed operation.</returns>
-        public virtual Task ReturnEndpoint(FitbitReturnEndpointContext context)
+        public virtual Task ReturnEndpoint(CanvasReturnEndpointContext context)
         {
             return OnReturnEndpoint(context);
         }
