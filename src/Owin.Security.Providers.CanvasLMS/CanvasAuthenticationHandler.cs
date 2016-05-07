@@ -160,7 +160,7 @@ namespace Owin.Security.Providers.CanvasLMS
             GenerateCorrelationId(properties);
 
             // comma separated
-            var scope = string.Join(" ", Options.Scope);
+            var scope = string.Join(" ", Options.Scopes);
 
             var state = Options.StateDataFormat.Protect(properties);
 
@@ -169,9 +169,9 @@ namespace Owin.Security.Providers.CanvasLMS
                 Options.Endpoints.AuthorizationPath +
                 "?client_id=" + Uri.EscapeDataString(Options.ClientId) +
                 "&response_type=" + Uri.EscapeDataString("code") +
-                "&scope=" + Uri.EscapeDataString(scope) +
+                "&scopes=" + Uri.EscapeDataString(scope) +
                 "&redirect_uri=" + Uri.EscapeDataString(redirectUri) +
-                "&prompt=" + Uri.EscapeDataString(Options.Prompt) +
+                "&purpose=" + Uri.EscapeDataString(Options.Purpose ?? "") +
                 "&state=" + Uri.EscapeDataString(state);
 
             Response.Redirect(authorizationEndpoint);

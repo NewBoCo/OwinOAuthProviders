@@ -91,11 +91,16 @@ namespace Owin.Security.Providers.CanvasLMS
         ///     Gets or sets the <see cref="ICanvasAuthenticationProvider" /> used in the authentication events
         /// </summary>
         public ICanvasAuthenticationProvider Provider { get; set; }
-        
+
         /// <summary>
-        /// A list of permissions to request.
+        /// A list of permissions to request. (optional)
         /// </summary>
-        public IList<string> Scope { get; private set; }
+        /// <remarks>
+        /// This can be used to specify what information the access token will provide access to.
+        /// By default an access token will have access to all api calls that a user can make.
+        /// The only other accepted value for this at present is '/auth/userinfo', which can be used to obtain the current canvas user's identity.
+        /// </remarks>
+        public IList<string> Scopes { get; private set; }
 
         /// <summary>
         ///     Gets or sets the name of another authentication middleware which will be responsible for actually issuing a user
@@ -104,9 +109,12 @@ namespace Owin.Security.Providers.CanvasLMS
         public string SignInAsAuthenticationType { get; set; }
 
         /// <summary>
-        /// Gets or sets the mode of the Canvas authentication page.  Can be none, login, or consent.  Defaults to none.
+        /// Gets or sets the purpose of this Canvas application. (optional)
         /// </summary>
-        public string Prompt { get; set; }
+        /// <remarks>
+        /// This can be used to help the user identify which instance of an application this token is for. For example, a mobile device application could provide the name of the device.
+        /// </remarks>
+        public string Purpose { get; set; }
 
         /// <summary>
         ///     Gets or sets the type used to secure data handled by the middleware.
@@ -126,10 +134,7 @@ namespace Owin.Security.Providers.CanvasLMS
             Caption = Constants.DefaultAuthenticationType;
             CallbackPath = new PathString("/signin-canvas");
             AuthenticationMode = AuthenticationMode.Passive;
-            Scope = new List<string>
-            {
-                "activity", "nutrition", "profile", "settings", "sleep", "social", "weight"
-            };
+            Scopes = new List<string>();
             BackchannelTimeout = TimeSpan.FromSeconds(60);
             EndpointBase = endpointBase;
             Endpoints = new CanvasAuthenticationEndpoints
@@ -138,7 +143,6 @@ namespace Owin.Security.Providers.CanvasLMS
                 TokenPath = TokenPath,
                 UserPath = UserPath,
             };
-            Prompt = "none";
         }
     }
 }
