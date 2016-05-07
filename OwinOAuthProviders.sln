@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Security.Providers.Bit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Security.Providers.Buffer", "src\Owin.Security.Providers.Buffer\Owin.Security.Providers.Buffer.csproj", "{6F75FC1F-D9E9-49B3-A6CE-CFA8FEEA11A5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Security.Providers.CanvasLMS", "src\Owin.Security.Providers.CanvasLMS\Owin.Security.Providers.CanvasLMS.csproj", "{6B74098F-1B9A-431A-A5EF-34709522380B}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Security.Providers.Cosign", "src\Owin.Security.Providers.Cosign\Owin.Security.Providers.Cosign.csproj", "{1F1F8D6B-7219-46FA-93D3-8D3061A6CBBF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Security.Providers.DeviantArt", "src\Owin.Security.Providers.DeviantArt\Owin.Security.Providers.DeviantArt.csproj", "{FABD2E54-976D-41F5-8800-DEE58ACC027C}"
@@ -124,6 +126,10 @@ Global
 		{6F75FC1F-D9E9-49B3-A6CE-CFA8FEEA11A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F75FC1F-D9E9-49B3-A6CE-CFA8FEEA11A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F75FC1F-D9E9-49B3-A6CE-CFA8FEEA11A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B74098F-1B9A-431A-A5EF-34709522380B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B74098F-1B9A-431A-A5EF-34709522380B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B74098F-1B9A-431A-A5EF-34709522380B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B74098F-1B9A-431A-A5EF-34709522380B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1F1F8D6B-7219-46FA-93D3-8D3061A6CBBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1F1F8D6B-7219-46FA-93D3-8D3061A6CBBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F1F8D6B-7219-46FA-93D3-8D3061A6CBBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
