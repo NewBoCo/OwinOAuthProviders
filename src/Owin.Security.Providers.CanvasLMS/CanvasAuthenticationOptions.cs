@@ -15,33 +15,33 @@ namespace Owin.Security.Providers.CanvasLMS
         public class CanvasAuthenticationEndpoints
         {
             /// <summary>
-            /// Endpoint which is used to redirect users to request Canvas access
+            /// Path which is used to redirect users to request Canvas access
             /// </summary>
             /// <remarks>
-            /// Defaults to https://canvas.instructure.com/login/oauth2/auth
+            /// Defaults to /login/oauth2/auth
             /// </remarks>
-            public string AuthorizationEndpoint { get; set; }
+            public string AuthorizationPath { get; set; }
 
             /// <summary>
-            /// Endpoint which is used to exchange code for access token
+            /// Path which is used to exchange code for access token
             /// </summary>
             /// <remarks>
-            /// Defaults to https://canvas.instructure.com/login/oauth2/token
+            /// Defaults to /login/oauth2/token
             /// </remarks>
-            public string TokenEndpoint { get; set; }
+            public string TokenPath { get; set; }
 
             /// <summary>
-            /// Endpoint which is used to request details about the authenticated user
+            /// Path which is used to request details about the authenticated user
             /// </summary>
             /// <remarks>
-            /// Defaults to https://canvas.instructure.com/api/v1/users/self
+            /// Defaults to /api/v1/users/self
             /// </remarks>
-            public string UserEndpoint { get; set; }
+            public string UserPath { get; set; }
         }
 
-        private const string AuthorizationEndPoint = "https://canvas.instructure.com/login/oauth2/auth";
-        private const string TokenEndpoint = "https://canvas.instructure.com/login/oauth2/token";
-        private const string UserEndpoint = "https://canvas.instructure.com/api/v1/users/self";
+        private const string AuthorizationPath = "/login/oauth2/auth";
+        private const string TokenPath = "/login/oauth2/token";
+        private const string UserPath = "/api/v1/users/self";
 
         /// <summary>
         ///     Gets or sets timeout value in milliseconds for back channel communications with Canvas.
@@ -78,6 +78,11 @@ namespace Owin.Security.Providers.CanvasLMS
         public string ClientSecret { get; set; }
 
         /// <summary>
+        /// Gets the base Canvas endpoint URL
+        /// </summary>
+        public string EndpointBase { get; private set; }
+
+        /// <summary>
         /// Gets the sets of OAuth endpoints used to authenticate against Canvas.
         /// </summary>
         public CanvasAuthenticationEndpoints Endpoints { get; set; }
@@ -111,9 +116,13 @@ namespace Owin.Security.Providers.CanvasLMS
         /// <summary>
         ///     Initializes a new <see cref="CanvasAuthenticationOptions" />
         /// </summary>
-        public CanvasAuthenticationOptions()
+        /// <param name="endpointBase">The base Canvas endpoint URL, e.g. https://canvas.instructure.com</param>
+        public CanvasAuthenticationOptions(string endpointBase)
             : base(Constants.DefaultAuthenticationType)
         {
+            if (endpointBase == null)
+                throw new ArgumentNullException(nameof(endpointBase));
+
             Caption = Constants.DefaultAuthenticationType;
             CallbackPath = new PathString("/signin-canvas");
             AuthenticationMode = AuthenticationMode.Passive;
@@ -122,11 +131,12 @@ namespace Owin.Security.Providers.CanvasLMS
                 "activity", "nutrition", "profile", "settings", "sleep", "social", "weight"
             };
             BackchannelTimeout = TimeSpan.FromSeconds(60);
+            EndpointBase = endpointBase;
             Endpoints = new CanvasAuthenticationEndpoints
             {
-                AuthorizationEndpoint = AuthorizationEndPoint,
-                TokenEndpoint = TokenEndpoint,
-                UserEndpoint = UserEndpoint,
+                AuthorizationPath = AuthorizationPath,
+                TokenPath = TokenPath,
+                UserPath = UserPath,
             };
             Prompt = "none";
         }

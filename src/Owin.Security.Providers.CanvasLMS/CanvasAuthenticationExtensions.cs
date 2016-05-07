@@ -29,10 +29,11 @@ namespace Owin.Security.Providers.CanvasLMS
         /// <param name="app">The <see cref="IAppBuilder"/> passed to the configuration method</param>
         /// <param name="clientId">The Canvas supplied Client ID</param>
         /// <param name="clientSecret">The Canvas supplied Client Secret</param>
+        /// <param name="endpointBase">The base Canvas endpoint URL, e.g. https://canvas.instructure.com</param>
         /// <returns>The updated <see cref="IAppBuilder"/></returns>
-        public static IAppBuilder UseCanvasAuthentication(this IAppBuilder app, string clientId, string clientSecret)
+        public static IAppBuilder UseCanvasAuthentication(this IAppBuilder app, string clientId, string clientSecret, string endpointBase)
         {
-            return app.UseCanvasAuthentication(new CanvasAuthenticationOptions
+            return app.UseCanvasAuthentication(new CanvasAuthenticationOptions(endpointBase)
             {
                 ClientId = clientId,
                 ClientSecret = clientSecret
