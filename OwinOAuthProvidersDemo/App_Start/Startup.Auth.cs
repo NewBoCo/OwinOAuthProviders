@@ -237,6 +237,12 @@ namespace OwinOAuthProvidersDemo
 
 			//app.UseBacklogAuthentication(options);
 
+			//app.UseCanvasAuthentication(new CanvasAuthenticationOptions("https://canvas.instructure.com")
+			//{
+			//	ClientId = "",
+			//	ClientSecret = "",
+			//});
+
 			//var cosignOptions = new CosignAuthenticationOptions
 			//{
 			//    AuthenticationType = "Cosign",
