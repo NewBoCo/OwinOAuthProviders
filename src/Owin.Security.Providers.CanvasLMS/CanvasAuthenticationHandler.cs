@@ -86,7 +86,7 @@ namespace Owin.Security.Providers.CanvasLMS
                 // Deserializes the token response
                 dynamic response = JsonConvert.DeserializeObject<dynamic>(text);
                 var accessToken = (string)response.access_token;
-                var refreshToken = (string) response.refresh_token;
+                var refreshToken = (string)response.refresh_token;
 
                 // Get the user info
                 var userInfoRequest = new HttpRequestMessage(HttpMethod.Get, Options.EndpointBase + Options.Endpoints.UserPath);
