@@ -190,7 +190,7 @@ namespace Owin.Security.Providers.CanvasLMS
             // TODO: error responses
 
             var ticket = await AuthenticateAsync();
-            if (ticket == null)
+            if (ticket == null && Request.Query["error"] != "access_denied")
             {
                 _logger.WriteWarning("Invalid return state, unable to redirect.");
                 Response.StatusCode = 500;
@@ -200,7 +200,7 @@ namespace Owin.Security.Providers.CanvasLMS
             var context = new CanvasReturnEndpointContext(Context, ticket)
             {
                 SignInAsAuthenticationType = Options.SignInAsAuthenticationType,
-                RedirectUri = ticket.Properties.RedirectUri
+                RedirectUri = ticket?.Properties.RedirectUri,
             };
 
             await Options.Provider.ReturnEndpoint(context);
