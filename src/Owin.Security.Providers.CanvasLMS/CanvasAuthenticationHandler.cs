@@ -112,6 +112,15 @@ namespace Owin.Security.Providers.CanvasLMS
                 {
                     context.Identity.AddClaim(new Claim(ClaimsIdentity.DefaultNameClaimType, context.Name, XmlSchemaString, Options.AuthenticationType));
                 }
+                if (!string.IsNullOrEmpty(context.AccessToken))
+                {
+                    context.Identity.AddClaim(new Claim(Constants.CanvasAccessToken, context.AccessToken));
+                }
+                if (!string.IsNullOrEmpty(context.RefreshToken))
+                {
+                    context.Identity.AddClaim(new Claim(Constants.CanvasRefreshToken, context.RefreshToken));
+                }
+
                 context.Properties = properties;
 
                 await Options.Provider.Authenticated(context);
