@@ -87,6 +87,7 @@ namespace Owin.Security.Providers.CanvasLMS
                 dynamic response = JsonConvert.DeserializeObject<dynamic>(text);
                 var accessToken = (string)response.access_token;
                 var refreshToken = (string)response.refresh_token;
+                var expiresIn = (int?)response.expires_in;
 
                 // Get the user info
                 var userInfoRequest = new HttpRequestMessage(HttpMethod.Get, Options.EndpointBase + Options.Endpoints.UserPath);
@@ -97,7 +98,7 @@ namespace Owin.Security.Providers.CanvasLMS
                 text = await userInfoResponse.Content.ReadAsStringAsync();
                 var user = JObject.Parse(text);
 
-                var context = new CanvasAuthenticatedContext(Context, user, accessToken, refreshToken)
+                var context = new CanvasAuthenticatedContext(Context, user, accessToken, refreshToken, expiresIn)
                 {
                     Identity = new ClaimsIdentity(
                         Options.AuthenticationType,

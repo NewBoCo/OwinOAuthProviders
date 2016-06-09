@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.
 
+using System;
 using System.Security.Claims;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
@@ -20,10 +21,12 @@ namespace Owin.Security.Providers.CanvasLMS.Provider
         /// <param name="user">The Canvas user information</param>
         /// <param name="accessToken">Canvas Access token</param>
         /// <param name="refreshToken">Canvas Refresh token</param>
-        public CanvasAuthenticatedContext(IOwinContext context, JObject user, string accessToken, string refreshToken)
+        /// <param name="expiresIn">Seconds until the access token expires</param>
+        public CanvasAuthenticatedContext(IOwinContext context, JObject user, string accessToken, string refreshToken, int? expiresIn)
             : base(context)
         {
             AccessToken = accessToken;
+            AccessTokenExpiration = DateTimeOffset.Now.AddSeconds(expiresIn ?? 0);
             RefreshToken = refreshToken;
             User = user;
             Name = user.SelectToken("name").ToString();
@@ -52,6 +55,11 @@ namespace Owin.Security.Providers.CanvasLMS.Provider
         /// Gets the Canvas access token
         /// </summary>
         public string AccessToken { get; private set; }
+
+        /// <summary>
+        /// Get the Canvas access token expiration time
+        /// </summary>
+        public DateTimeOffset AccessTokenExpiration { get; set; }
 
         /// <summary>
         /// Gets the Canvas refresh token

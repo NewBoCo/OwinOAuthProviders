@@ -4,6 +4,7 @@
     {
         public const string DefaultAuthenticationType = "CanvasLMS";
         public static readonly string CanvasAccessToken = "urn:canvas:access_token";
+        public static readonly string CanvasAccessTokenExpiration = "urn:canvas:access_token_expiration";
         public static readonly string CanvasRefreshToken = "urn:canvas:refresh_token";
     }
 }
