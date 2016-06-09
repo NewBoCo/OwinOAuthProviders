@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -121,6 +122,7 @@ namespace Owin.Security.Providers.CanvasLMS
                 {
                     context.Identity.AddClaim(new Claim(Constants.CanvasRefreshToken, context.RefreshToken));
                 }
+                context.Identity.AddClaim(new Claim(Constants.CanvasAccessTokenExpiration, context.AccessTokenExpiration.ToString("u", CultureInfo.InvariantCulture)));
 
                 context.Properties = properties;
 
@@ -191,7 +193,31 @@ namespace Owin.Security.Providers.CanvasLMS
 
         public override async Task<bool> InvokeAsync()
         {
-            return await InvokeReplyPathAsync();
+            return await InvokeReplyPathAsync() || await RefreshAccessTokenAsync();
+        }
+
+        private async Task<bool> RefreshAccessTokenAsync()
+        {
+            var refreshToken = Context.Authentication.User?.FindFirst(Constants.CanvasRefreshToken)?.Value;
+            if (string.IsNullOrEmpty(refreshToken))
+                return false;
+
+            var accessTokenExpiration = ParseExpiration();
+            if (accessTokenExpiration > DateTimeOffset.Now.AddMinutes(1))
+                return false;
+
+            _logger.WriteInformation("Requesting new access token.");
+            // TODO: Request new access token
+            return false;
+        }
+
+        DateTimeOffset ParseExpiration()
+        {
+            var expiration = Context.Authentication.User?.FindFirst(Constants.CanvasAccessTokenExpiration)?.Value;
+            if (string.IsNullOrEmpty(expiration))
+                return DateTimeOffset.MinValue;
+
+            return DateTimeOffset.ParseExact(expiration, "u", CultureInfo.InvariantCulture);
         }
 
         private async Task<bool> InvokeReplyPathAsync()
