@@ -63,47 +63,7 @@ namespace Owin.Security.Providers.CanvasLMS
                 }
 
                 var response = await RequestToken("authorization_code", code, "code");
-                var accessToken = (string)response.access_token;
-                var refreshToken = (string)response.refresh_token;
-                var expiresIn = (int?)response.expires_in;
-
-                // Get the user info
-                var userInfoRequest = new HttpRequestMessage(HttpMethod.Get, Options.EndpointBase + Options.Endpoints.UserPath);
-                userInfoRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                userInfoRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var userInfoResponse = await _httpClient.SendAsync(userInfoRequest);
-                userInfoResponse.EnsureSuccessStatusCode();
-                var userInfoResponseContent = await userInfoResponse.Content.ReadAsStringAsync();
-                var user = JObject.Parse(userInfoResponseContent);
-
-                var context = new CanvasAuthenticatedContext(Context, user, accessToken, refreshToken, expiresIn)
-                {
-                    Identity = new ClaimsIdentity(
-                        Options.AuthenticationType,
-                        ClaimsIdentity.DefaultNameClaimType,
-                        ClaimsIdentity.DefaultRoleClaimType)
-                };
-                if (!string.IsNullOrEmpty(context.Id))
-                {
-                    context.Identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, context.Id, XmlSchemaString, Options.AuthenticationType));
-                }
-                if (!string.IsNullOrEmpty(context.Name))
-                {
-                    context.Identity.AddClaim(new Claim(ClaimsIdentity.DefaultNameClaimType, context.Name, XmlSchemaString, Options.AuthenticationType));
-                }
-                if (!string.IsNullOrEmpty(context.AccessToken))
-                {
-                    context.Identity.AddClaim(new Claim(Constants.CanvasAccessToken, context.AccessToken));
-                }
-                if (!string.IsNullOrEmpty(context.RefreshToken))
-                {
-                    context.Identity.AddClaim(new Claim(Constants.CanvasRefreshToken, context.RefreshToken));
-                }
-                context.Identity.AddClaim(new Claim(Constants.CanvasAccessTokenExpiration, context.AccessTokenExpiration.ToString("u", CultureInfo.InvariantCulture)));
-
-                context.Properties = properties;
-
-                await Options.Provider.Authenticated(context);
+                var context = await Authenticate(response, properties);
 
                 return new AuthenticationTicket(context.Identity, context.Properties);
             }
@@ -268,6 +228,56 @@ namespace Owin.Security.Providers.CanvasLMS
 
             var tokenResponseContent = await tokenResponse.Content.ReadAsStringAsync();
             return JObject.Parse(tokenResponseContent);
+        }
+
+        private async Task<CanvasAuthenticatedContext> Authenticate(dynamic response, AuthenticationProperties properties)
+        {
+            var accessToken = (string)response.access_token;
+            var refreshToken = (string)response.refresh_token;
+            var expiresIn = (int?)response.expires_in;
+
+            // Get the user info
+            var userInfoRequest = new HttpRequestMessage(HttpMethod.Get, Options.EndpointBase + Options.Endpoints.UserPath);
+            userInfoRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            userInfoRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var userInfoResponse = await _httpClient.SendAsync(userInfoRequest);
+            userInfoResponse.EnsureSuccessStatusCode();
+            var userInfoResponseContent = await userInfoResponse.Content.ReadAsStringAsync();
+            var user = JObject.Parse(userInfoResponseContent);
+
+            var context = new CanvasAuthenticatedContext(Context, user, accessToken, refreshToken, expiresIn)
+            {
+                Identity = new ClaimsIdentity(
+                    Options.AuthenticationType,
+                    ClaimsIdentity.DefaultNameClaimType,
+                    ClaimsIdentity.DefaultRoleClaimType)
+            };
+            if (!string.IsNullOrEmpty(context.Id))
+            {
+                context.Identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, context.Id, XmlSchemaString,
+                    Options.AuthenticationType));
+            }
+            if (!string.IsNullOrEmpty(context.Name))
+            {
+                context.Identity.AddClaim(new Claim(ClaimsIdentity.DefaultNameClaimType, context.Name, XmlSchemaString,
+                    Options.AuthenticationType));
+            }
+            if (!string.IsNullOrEmpty(context.AccessToken))
+            {
+                context.Identity.AddClaim(new Claim(Constants.CanvasAccessToken, context.AccessToken));
+            }
+            if (!string.IsNullOrEmpty(context.RefreshToken))
+            {
+                context.Identity.AddClaim(new Claim(Constants.CanvasRefreshToken, context.RefreshToken));
+            }
+            context.Identity.AddClaim(new Claim(Constants.CanvasAccessTokenExpiration,
+                context.AccessTokenExpiration.ToString("u", CultureInfo.InvariantCulture)));
+
+            context.Properties = properties;
+
+            await Options.Provider.Authenticated(context);
+
+            return context;
         }
     }
 }
