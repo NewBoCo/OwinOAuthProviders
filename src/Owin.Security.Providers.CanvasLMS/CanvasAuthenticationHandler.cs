@@ -62,7 +62,7 @@ namespace Owin.Security.Providers.CanvasLMS
                     return new AuthenticationTicket(null, properties);
                 }
 
-                var response = await RequestToken(code);
+                var response = await RequestToken("authorization_code", code, "code");
                 var accessToken = (string)response.access_token;
                 var refreshToken = (string)response.refresh_token;
                 var expiresIn = (int?)response.expires_in;
@@ -242,7 +242,7 @@ namespace Owin.Security.Providers.CanvasLMS
             return context.IsRequestCompleted;
         }
 
-        private async Task<object> RequestToken(string code)
+        private async Task<object> RequestToken(string grantType, string grantToken, string grantTokenParameterName = null)
         {
             var requestPrefix = Request.Scheme + "://" + Request.Host;
             var redirectUri = requestPrefix + Request.PathBase + Options.CallbackPath;
@@ -250,8 +250,8 @@ namespace Owin.Security.Providers.CanvasLMS
             // Build up the body for the token request
             var body = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("code", code),
-                new KeyValuePair<string, string>("grant_type", "authorization_code"),
+                new KeyValuePair<string, string>(grantTokenParameterName ?? grantType, grantToken),
+                new KeyValuePair<string, string>("grant_type", grantType),
                 new KeyValuePair<string, string>("client_id", Options.ClientId),
                 new KeyValuePair<string, string>("redirect_uri", redirectUri)
             };
