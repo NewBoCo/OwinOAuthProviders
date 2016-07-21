@@ -234,7 +234,7 @@ namespace Owin.Security.Providers.CanvasLMS
 
         private async Task<object> RequestToken(string grantType, string grantToken, string grantTokenParameterName = null)
         {
-            var requestPrefix = Request.Scheme + "://" + Request.Host;
+            var requestPrefix = Request.Scheme + Uri.SchemeDelimiter + Request.Host;
             var redirectUri = requestPrefix + Request.PathBase + Options.CallbackPath;
 
             // Build up the body for the token request
