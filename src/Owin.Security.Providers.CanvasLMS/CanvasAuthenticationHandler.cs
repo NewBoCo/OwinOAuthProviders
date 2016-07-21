@@ -96,8 +96,8 @@ namespace Owin.Security.Providers.CanvasLMS
                 userInfoRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var userInfoResponse = await _httpClient.SendAsync(userInfoRequest);
                 userInfoResponse.EnsureSuccessStatusCode();
-                text = await userInfoResponse.Content.ReadAsStringAsync();
-                var user = JObject.Parse(text);
+                var userInfoResponseContent = await userInfoResponse.Content.ReadAsStringAsync();
+                var user = JObject.Parse(userInfoResponseContent);
 
                 var context = new CanvasAuthenticatedContext(Context, user, accessToken, refreshToken, expiresIn)
                 {
