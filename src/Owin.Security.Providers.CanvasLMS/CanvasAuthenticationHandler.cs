@@ -149,14 +149,23 @@ namespace Owin.Security.Providers.CanvasLMS
             try
             {
                 var response = await RequestToken("refresh_token", refreshToken);
-                var identity = (ClaimsIdentity)Context.Authentication.User.Identity;
-
-                var claims = identity.Claims.ToList();
-                foreach (var c in claims)
-                    identity.RemoveClaim(c);
+                var identity = Context.Authentication.User.Identities
+                    .FirstOrDefault(ci => ci.AuthenticationType == Options.SignInAsAuthenticationType);
 
                 var context = await Authenticate(response, refreshToken: refreshToken);
-                identity.AddClaims(context.Identity.Claims);
+
+                if (identity == null)
+                {
+                    identity = context.Identity;
+                }
+                else
+                {
+                    var claims = identity.Claims.ToList();
+                    foreach (var c in claims)
+                        identity.RemoveClaim(c);
+
+                    identity.AddClaims(context.Identity.Claims);
+                }
 
                 Context.Authentication.SignIn(identity);
                 return false;
