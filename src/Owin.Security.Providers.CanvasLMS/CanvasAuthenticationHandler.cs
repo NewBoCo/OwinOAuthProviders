@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -144,8 +145,28 @@ namespace Owin.Security.Providers.CanvasLMS
                 return false;
 
             _logger.WriteInformation("Requesting new access token.");
-            // TODO: Request new access token
-            return false;
+
+            try
+            {
+                var response = await RequestToken("refresh_token", refreshToken);
+                var identity = (ClaimsIdentity)Context.Authentication.User.Identity;
+
+                var claims = identity.Claims.ToList();
+                foreach (var c in claims)
+                    identity.RemoveClaim(c);
+
+                var context = await Authenticate(response, refreshToken: refreshToken);
+                identity.AddClaims(context.Identity.Claims);
+
+                Context.Authentication.SignIn(identity);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteError(ex.Message);
+                Response.StatusCode = 500;
+                return true;
+            }
         }
 
         DateTimeOffset ParseExpiration()
@@ -230,10 +251,10 @@ namespace Owin.Security.Providers.CanvasLMS
             return JObject.Parse(tokenResponseContent);
         }
 
-        private async Task<CanvasAuthenticatedContext> Authenticate(dynamic response, AuthenticationProperties properties)
+        private async Task<CanvasAuthenticatedContext> Authenticate(dynamic response, AuthenticationProperties properties = null, string refreshToken = null)
         {
             var accessToken = (string)response.access_token;
-            var refreshToken = (string)response.refresh_token;
+            refreshToken = (string)response.refresh_token ?? refreshToken;
             var expiresIn = (int?)response.expires_in;
 
             // Get the user info
