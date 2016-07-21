@@ -136,12 +136,12 @@ namespace Owin.Security.Providers.CanvasLMS
 
         private async Task<bool> RefreshAccessTokenAsync()
         {
-            var refreshToken = Context.Authentication.User?.FindFirst(Constants.CanvasRefreshToken)?.Value;
-            if (string.IsNullOrEmpty(refreshToken))
-                return false;
-
             var accessTokenExpiration = ParseExpiration();
             if (accessTokenExpiration > DateTimeOffset.Now.AddMinutes(1))
+                return false;
+
+            var refreshToken = Context.Authentication.User?.FindFirst(Constants.CanvasRefreshToken)?.Value;
+            if (string.IsNullOrEmpty(refreshToken))
                 return false;
 
             _logger.WriteInformation("Requesting new access token.");
