@@ -11,7 +11,6 @@ using Microsoft.Owin.Logging;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.DataHandler.Encoder;
 using Microsoft.Owin.Security.Infrastructure;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Owin.Security.Providers.CanvasLMS.Provider;
 
@@ -63,29 +62,7 @@ namespace Owin.Security.Providers.CanvasLMS
                     return new AuthenticationTicket(null, properties);
                 }
 
-                var requestPrefix = Request.Scheme + "://" + Request.Host;
-                var redirectUri = requestPrefix + Request.PathBase + Options.CallbackPath;
-
-                // Build up the body for the token request
-                var body = new List<KeyValuePair<string, string>>
-                {
-                    new KeyValuePair<string, string>("code", code),
-                    new KeyValuePair<string, string>("grant_type", "authorization_code"),
-                    new KeyValuePair<string, string>("client_id", Options.ClientId),
-                    new KeyValuePair<string, string>("redirect_uri", redirectUri)
-                };
-
-                // Request the token
-                var requestMessage = new HttpRequestMessage(HttpMethod.Post, Options.EndpointBase + Options.Endpoints.TokenPath);
-                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Basic", new Base64TextEncoder().Encode(Encoding.ASCII.GetBytes(Options.ClientId + ":" + Options.ClientSecret)));
-                requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                requestMessage.Content = new FormUrlEncodedContent(body);
-                var tokenResponse = await _httpClient.SendAsync(requestMessage);
-                tokenResponse.EnsureSuccessStatusCode();
-                var text = await tokenResponse.Content.ReadAsStringAsync();
-
-                // Deserializes the token response
-                dynamic response = JsonConvert.DeserializeObject<dynamic>(text);
+                var response = await RequestToken(code);
                 var accessToken = (string)response.access_token;
                 var refreshToken = (string)response.refresh_token;
                 var expiresIn = (int?)response.expires_in;
@@ -263,6 +240,34 @@ namespace Owin.Security.Providers.CanvasLMS
             context.RequestCompleted();
 
             return context.IsRequestCompleted;
+        }
+
+        private async Task<object> RequestToken(string code)
+        {
+            var requestPrefix = Request.Scheme + "://" + Request.Host;
+            var redirectUri = requestPrefix + Request.PathBase + Options.CallbackPath;
+
+            // Build up the body for the token request
+            var body = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("code", code),
+                new KeyValuePair<string, string>("grant_type", "authorization_code"),
+                new KeyValuePair<string, string>("client_id", Options.ClientId),
+                new KeyValuePair<string, string>("redirect_uri", redirectUri)
+            };
+
+            // Request the token
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, Options.EndpointBase + Options.Endpoints.TokenPath);
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Basic",
+                new Base64TextEncoder().Encode(Encoding.ASCII.GetBytes(Options.ClientId + ":" + Options.ClientSecret)));
+            requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            requestMessage.Content = new FormUrlEncodedContent(body);
+
+            var tokenResponse = await _httpClient.SendAsync(requestMessage);
+            tokenResponse.EnsureSuccessStatusCode();
+
+            var tokenResponseContent = await tokenResponse.Content.ReadAsStringAsync();
+            return JObject.Parse(tokenResponseContent);
         }
     }
 }
