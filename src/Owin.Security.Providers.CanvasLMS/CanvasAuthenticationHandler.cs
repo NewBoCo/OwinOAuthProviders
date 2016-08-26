@@ -115,7 +115,7 @@ namespace Owin.Security.Providers.CanvasLMS
             var state = Options.StateDataFormat.Protect(properties);
 
             var authorizationEndpoint =
-                Options.EndpointBase +
+                Options.EndpointBase(Context) +
                 Options.Endpoints.AuthorizationPath +
                 "?client_id=" + Uri.EscapeDataString(Options.ClientId) +
                 "&response_type=" + Uri.EscapeDataString("code") +
@@ -247,7 +247,7 @@ namespace Owin.Security.Providers.CanvasLMS
             };
 
             // Request the token
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, Options.EndpointBase + Options.Endpoints.TokenPath);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, Options.EndpointBase(Context) + Options.Endpoints.TokenPath);
             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Basic",
                 new Base64TextEncoder().Encode(Encoding.ASCII.GetBytes(Options.ClientId + ":" + Options.ClientSecret)));
             requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -267,7 +267,7 @@ namespace Owin.Security.Providers.CanvasLMS
             var expiresIn = (int?)response.expires_in;
 
             // Get the user info
-            var userInfoRequest = new HttpRequestMessage(HttpMethod.Get, Options.EndpointBase + Options.Endpoints.UserPath);
+            var userInfoRequest = new HttpRequestMessage(HttpMethod.Get, Options.EndpointBase(Context) + Options.Endpoints.UserPath);
             userInfoRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             userInfoRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             var userInfoResponse = await _httpClient.SendAsync(userInfoRequest);

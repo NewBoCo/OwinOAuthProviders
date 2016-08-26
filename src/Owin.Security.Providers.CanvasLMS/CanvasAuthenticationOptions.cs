@@ -80,7 +80,7 @@ namespace Owin.Security.Providers.CanvasLMS
         /// <summary>
         /// Gets the base Canvas endpoint URL
         /// </summary>
-        public string EndpointBase { get; private set; }
+        public Func<IOwinContext, string> EndpointBase { get; private set; }
 
         /// <summary>
         /// Gets the sets of OAuth endpoints used to authenticate against Canvas.
@@ -126,6 +126,17 @@ namespace Owin.Security.Providers.CanvasLMS
         /// </summary>
         /// <param name="endpointBase">The base Canvas endpoint URL, e.g. https://canvas.instructure.com</param>
         public CanvasAuthenticationOptions(string endpointBase)
+            : this(_ => endpointBase)
+        {
+            if (endpointBase == null)
+                throw new ArgumentNullException(nameof(endpointBase));
+        }
+
+        /// <summary>
+        ///     Initializes a new <see cref="CanvasAuthenticationOptions" />
+        /// </summary>
+        /// <param name="endpointBase">Function to generate the base Canvas endpoint URL, e.g. https://canvas.instructure.com</param>
+        public CanvasAuthenticationOptions(Func<IOwinContext, string> endpointBase)
             : base(Constants.DefaultAuthenticationType)
         {
             if (endpointBase == null)
