@@ -70,7 +70,7 @@ namespace Owin.Security.Providers.CanvasLMS
             }
             catch (Exception ex)
             {
-                _logger.WriteError(ex.Message);
+                _logger.WriteError("Authentication failure.", ex);
             }
             return new AuthenticationTicket(null, properties);
         }
@@ -172,7 +172,7 @@ namespace Owin.Security.Providers.CanvasLMS
             }
             catch (Exception ex)
             {
-                _logger.WriteError(ex.Message);
+                _logger.WriteError("Could not refresh access token.", ex);
                 Response.StatusCode = 500;
                 return true;
             }
